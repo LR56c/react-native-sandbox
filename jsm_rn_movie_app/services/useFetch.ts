@@ -33,5 +33,5 @@ export const useFetch =<T>(fetchFunction : ()=>Promise<T>, autoFetch = true) => 
     }
   }, [] )
 
-  return { data, loading, error, fetchData, reset }
+  return { data, loading, error, refetch : fetchData, reset }
 }
