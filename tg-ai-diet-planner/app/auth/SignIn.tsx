@@ -1,26 +1,47 @@
-import { Image, Pressable, Text, View } from "react-native"
-import Input                            from "@/components/Input"
-import Button                           from "@/components/Button"
-import { Link }                         from "expo-router"
+import { Image, Text, View }     from "react-native"
+import Button                    from "@/components/Button"
+import { Link }                  from "expo-router"
+import { zodResolver }           from "@hookform/resolvers/zod"
+import { FormProvider, useForm } from "react-hook-form"
+
+import { z } from "zod"
+import Input from "@/components/Input"
+
+const schema = z.object( {
+  name    : z.string()
+             .min( 2, { message: "Name must be at least 2 characters long" } ),
+  email   : z.string().email( { message: "Invalid email address" } ),
+  password: z.string()
+             .min( 6,
+               { message: "Password must be at least 6 characters long" } )
+} )
 
 export default function SignIn() {
-  const onSignIn = () => {}
+  const methods = useForm( {
+    resolver: zodResolver( schema )
+  } )
+
+  const onSubmit = ( data ) => {
+    console.log( "onSubmit", data )
+  }
 
   return (
-    <View className="flex-1 items-center p-4 gap-4">
-      <Image className="w-20 h-20 mt-20"
-             source={ require( "./../../assets/images/food_logo.png" ) }/>
-      <Text className="text-2xl font-bold">Welcome Back</Text>
-      <Input placeholder="Email"/>
-      <Input placeholder="Password" secureTextEntry/>
-      <Button title="Sign In"/>
-      <View className="flex gap-2 items-center">
-        <Text>Don't have an Account?</Text>
-        <Link href="/auth/SignUp">
-          <Text className="text-center text-lg font-bold">Create New
-            Account </Text>
-        </Link>
+    <FormProvider { ...methods } >
+      <View className="flex-1 items-center p-4 gap-4">
+        <Image className="w-20 h-20 mt-20"
+               source={ require( "./../../assets/images/food_logo.png" ) }/>
+        <Text className="text-2xl font-bold">Welcome Back</Text>
+        <Input name="email" placeholder="Email"/>
+        <Input name="password" placeholder="Password" secureTextEntry/>
+        <Button onPress={ methods.handleSubmit(onSubmit) } title="Sign In"/>
+        <View className="flex gap-2 items-center">
+          <Text>Don't have an Account?</Text>
+          <Link href="/auth/SignUp">
+            <Text className="text-center text-lg font-bold">Create New
+              Account </Text>
+          </Link>
+        </View>
       </View>
-    </View>
+    </FormProvider>
   )
 }
