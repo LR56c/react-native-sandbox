@@ -6,23 +6,30 @@ import { FormProvider, useForm } from "react-hook-form"
 
 import { z } from "zod"
 import Input from "@/components/Input"
+import { signInWithEmailAndPassword } from "@firebase/auth"
+import { auth } from "@/firebase"
+import { useConvex } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useUserStore } from "@/store/useUser"
 
 const schema = z.object( {
-  name    : z.string()
-             .min( 2, { message: "Name must be at least 2 characters long" } ),
   email   : z.string().email( { message: "Invalid email address" } ),
   password: z.string()
-             .min( 6,
-               { message: "Password must be at least 6 characters long" } )
 } )
 
 export default function SignIn() {
   const methods = useForm( {
     resolver: zodResolver( schema )
   } )
+  const setUser = useUserStore((state) => state.setUser);
+  const convex = useConvex()
 
-  const onSubmit = ( data ) => {
+  const onSubmit = async ( data ) => {
     console.log( "onSubmit", data )
+    const r = await signInWithEmailAndPassword(auth, data.email, data.password)
+    console.log("r", r)
+    const user = await convex.query(api.users.GetUser, { email: data.email })
+    console.log("user", user)
   }
 
   return (
