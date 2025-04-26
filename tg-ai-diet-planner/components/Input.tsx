@@ -3,12 +3,14 @@ import { Controller, useFormContext } from "react-hook-form"
 
 interface InputProps {
   name: string
+  label?: string
   placeholder: string
   secureTextEntry?: boolean
 }
 
 export default function Input( {
   name,
+  label,
   placeholder,
   secureTextEntry
 }: InputProps )
@@ -21,7 +23,8 @@ export default function Input( {
   const errorMessage = errors[name]?.message as string | undefined
 
   return (
-    <View className="flex flex-col w-full">
+    <View className="flex gap-2 flex-col w-full">
+      { label ? <Text className="text-xl">{ label }</Text> : null }
       <Controller
         control={ control }
         name={ name }
