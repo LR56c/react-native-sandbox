@@ -38,7 +38,7 @@ export default function SignUp() {
     console.log( "result", result )
     setUser({
       name: data.name,
-      email: data.email
+      email: data.email,
     })
   }
 

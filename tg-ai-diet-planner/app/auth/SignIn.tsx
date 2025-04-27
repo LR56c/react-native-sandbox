@@ -31,8 +31,8 @@ export default function SignIn() {
         const user = await convex.query( api.users.GetUser,
           { email: data.email } )
         setUser( {
-          name : data.name,
-          email: data.email
+          id: user._id,
+          ...user
         } )
       }
     ).catch( ( error ) => {

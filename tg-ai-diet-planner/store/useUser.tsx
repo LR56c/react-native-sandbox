@@ -1,8 +1,15 @@
 import { create } from 'zustand';
 
 type User = {
+  id: string
   name: string;
   email: string;
+  height?: string;
+  weight?: string;
+  gender?: string;
+  goal?: string;
+  calories?: string;
+  proteins?: string;
 };
 
 type UserState = {

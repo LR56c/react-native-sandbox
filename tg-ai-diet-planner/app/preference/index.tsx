@@ -14,12 +14,17 @@ import {
 import { HugeiconsIcon }                     from "@hugeicons/react-native"
 import Button                                from "@/components/Button"
 import GoalButton                            from "@/components/GoalButton"
+import { useMutation }                       from "convex/react"
+import { api }                               from "@/convex/_generated/api"
+import { useUserStore }                      from "@/store/useUser"
+import { useRouter }                             from "expo-router"
+import { CalculateCaloriesBot, CALORIES_PROMPT } from "@/ai_model"
 
 const schema = z.object( {
-  weight: z.number( {
+  weight:  z.string().regex(/^[0-9]+$/, {
     message: "Weight is required"
   } ),
-  height: z.number( {
+  height:  z.string().regex(/^[0-9]+$/, {
     message: "Height is required"
   } ),
   gender: z.string( {
@@ -36,14 +41,38 @@ export default function index() {
       resolver: zodResolver( schema )
     } )
 
-  const { control, handleSubmit, setValue, formState: { errors } } = methods
+  const {
+          control,
+          handleSubmit,
+          setValue,
+          formState: { errors }
+        } = methods
 
-  const onSubmit = async ( data ) => {
-    console.log( "onSubmit", data )
+  const router = useRouter()
+  const user    = useUserStore( ( state ) => state.user )
+  const setUser = useUserStore( ( state ) => state.setUser )
+
+  const UpdateUserPref = useMutation( api.users.UpdateUserPref )
+
+
+  const onSubmit = async ( values ) => {
+    const data   = {
+      id    : user?.id,
+      height: values.height,
+      weight: values.weight,
+      gender: values.gender,
+      goal  : values.goal
+    }
+
+    const prompt = `${CALORIES_PROMPT}\nUser Info: ${JSON.stringify(data)}`
+    const aiResult = await CalculateCaloriesBot(prompt)
+    const jsonContent = JSON.parse(aiResult.choices[0].message.content?.replace('```json', '').replace('```', ''))
+    await UpdateUserPref( { ...data, ...jsonContent } )
+    setUser( { ...user, ...jsonContent, ...data } )
+    router.replace('/(tabs)/Home')
   }
   return (
     <FormProvider { ...methods } >
-
       <View className="p-8 bg-white h-full flex gap-4">
         <Text className="text-center text-xl font-bold">
           Tell us about yourself
@@ -53,10 +82,12 @@ export default function index() {
         </Text>
         <View className="flex flex-row gap-4 w-full ">
           <View className="flex-1">
-            <Input name="weight" placeholder="eg. 70" label="Weight (kg)"/>
+            <Input keyboardType="numeric" name="weight" placeholder="eg. 70"
+                   label="Weight (kg)"/>
           </View>
           <View className="flex-1">
-            <Input name="height" placeholder="eg. 5.10" label="Height (ft)"/>
+            <Input keyboardType="numeric" name="height" placeholder="eg. 5.10"
+                   label="Height (ft)"/>
           </View>
         </View>
         <View className="flex- flex-col gap-4">
@@ -65,54 +96,60 @@ export default function index() {
             <Controller
               control={ control }
               name="gender"
-              render={ ( { field: { onChange, onBlur, value } } ) => (
-                <Pressable
-                  onPress={ () => setValue( "gender", "female" ) }
-                  style={ {
-                    borderColor: value === "female" ? "#FF69B4" : "#b0b0b0"
-                  } }
-                  className={ `border rounded-xl p-4 flex-1  items-center justify-center` }>
-                  <HugeiconsIcon
-                    icon={ FemaleSymbolIcon }
-                    color="#FF69B4"
-                  />
-                </Pressable>
-              ) }
-            />
-            <Controller
-              control={ control }
-              name="gender"
-              render={ ( { field: { onChange, onBlur, value } } ) => (
-                <Pressable
-                  onPress={ () => setValue( "gender", "male" ) }
-                  style={ {
-                    borderColor: value === "male" ? "#00BFFF" : "#b0b0b0"
-                  } }
-                  className="border  rounded-xl p-4 flex-1  items-center justify-center">
-                  <HugeiconsIcon
-                    icon={ MaleSymbolIcon }
-                    color="#00BFFF"
-                  />
-                </Pressable>
-              ) }
-            />
-            <Controller
-              control={ control }
-              name="gender"
-              render={ ( { field: { onChange, onBlur, value } } ) => (
-                <Pressable
-                  onPress={ () => setValue( "gender", "other" ) }
-                  style={ {
-                    borderColor: value === "other" ? "#000000" : "#b0b0b0"
-                  } }
-                  className="border  rounded-xl p-4 flex-1  items-center justify-center">
-                  <HugeiconsIcon icon={ OvalIcon }/>
-                </Pressable>
+              render={ ( { field: { value } } ) => (
+                <>
+                  <Pressable
+                    key="female"
+                    onPress={ () =>
+                      setValue( "gender", "female", {
+                        shouldValidate: true
+                      } )
+                    }
+                    style={ {
+                      borderColor: value === "female" ? "#8429fa" : "#b0b0b0"
+                    } }
+                    className={ `border rounded-xl p-4 flex-1  items-center justify-center` }>
+                    <HugeiconsIcon
+                      icon={ FemaleSymbolIcon }
+                      color="#FF69B4"
+                    />
+                  </Pressable>
+                  <Pressable
+                    key="male"
+                    onPress={ () =>
+                      setValue( "gender", "male", {
+                        shouldValidate: true
+                      } )
+                    }
+                    style={ {
+                      borderColor: value === "male" ? "#8429fa" : "#b0b0b0"
+                    } }
+                    className="border  rounded-xl p-4 flex-1  items-center justify-center">
+                    <HugeiconsIcon
+                      icon={ MaleSymbolIcon }
+                      color="#00BFFF"
+                    />
+                  </Pressable>
+                  <Pressable
+                    key="other"
+                    onPress={ () =>
+                      setValue( "gender", "other", {
+                        shouldValidate: true
+                      } )
+                    }
+                    style={ {
+                      borderColor: value === "other" ? "#8429fa" : "#b0b0b0"
+                    } }
+                    className="border  rounded-xl p-4 flex-1  items-center justify-center">
+                    <HugeiconsIcon icon={ OvalIcon }/>
+                  </Pressable>
+                </>
               ) }
             />
           </View>
           { errors.gender
-            ? <Text className="text-red-500">{ errors.gender.message }</Text>
+            ? <Text
+              className="text-red-500">{ errors.gender.message }</Text>
             : null }
         </View>
         <View className="flex flex-col gap-4">
@@ -120,52 +157,51 @@ export default function index() {
           <Controller
             control={ control }
             name="goal"
-            render={ ( { field: { onChange, onBlur, value } } ) => (
-              <GoalButton title="Weight Loss"
-                          style={ {
-                            borderColor: value === "Weight Loss"
-                              ? "#000000"
-                              : "#b0b0b0"
-                          } }
-                          description="Reduce body fat & get leaner"
-                          icon={ <HugeiconsIcon icon={ WeightScale01Icon }/> }
-                          onPress={ () => setValue( "goal",
-                            "Weight Loss" ) }/>
+            render={ ( { field: { value } } ) => (
+              <>
+                <GoalButton title="Weight Loss"
+                            key="weight-loss"
+                            style={ {
+                              borderColor: value === "Weight Loss"
+                                ? "#8429fa"
+                                : "#b0b0b0"
+                            } }
+                            description="Reduce body fat & get leaner"
+                            icon={ <HugeiconsIcon icon={ WeightScale01Icon }/> }
+                            onPress={ () => setValue( "goal",
+                              "Weight Loss", {
+                                shouldValidate: true
+                              } ) }/>
+                <GoalButton title="Muscle Gain"
+                            key="muscle-gain"
+                            style={ {
+                              borderColor: value === "Muscle Gain"
+                                ? "#8429fa"
+                                : "#b0b0b0"
+                            } }
+                            description="Build Muscle & Get Stronger"
+                            icon={ <HugeiconsIcon
+                              icon={ BodyPartMuscleIcon }/> }
+                            onPress={ () => setValue( "goal",
+                              "Muscle Gain", {
+                                shouldValidate: true
+                              } ) }/>
+                <GoalButton title="Weight Gain"
+                            key="weight-gain"
+                            style={ {
+                              borderColor: value === "Weight Gain"
+                                ? "#8429fa"
+                                : "#b0b0b0"
+                            } }
+                            description="Increase healthy body mass"
+                            icon={ <HugeiconsIcon icon={ Dumbbell02Icon }/> }
+                            onPress={ () => setValue( "goal",
+                              "Weight Gain", {
+                                shouldValidate: true
+                              } ) }/>
+              </>
             ) }
           />
-          <Controller
-            control={ control }
-            name="goal"
-            render={ ( { field: { onChange, onBlur, value } } ) => (
-              <GoalButton title="Muscle Gain"
-                          style={ {
-                            borderColor: value === "Muscle Gain"
-                              ? "#000000"
-                              : "#b0b0b0"
-                          } }
-                          description="Build Muscle & Get Stronger"
-                          icon={ <HugeiconsIcon icon={ BodyPartMuscleIcon }/> }
-                          onPress={ () => setValue( "goal",
-                            "Muscle Gain" ) }/>
-            ) }
-          />
-          <Controller
-            control={ control }
-            name="goal"
-            render={ ( { field: { onChange, onBlur, value } } ) => (
-              <GoalButton title="Weight Gain"
-                          style={ {
-                            borderColor: value === "Weight Gain"
-                              ? "#000000"
-                              : "#b0b0b0"
-                          } }
-                          description="Increase healthy body mass"
-                          icon={ <HugeiconsIcon icon={ Dumbbell02Icon }/> }
-                          onPress={ () => setValue( "goal",
-                            "Weight Gain" ) }/>
-            ) }
-          />
-
           { errors.goal ? <Text
             className="text-red-500">{ errors.goal.message }</Text> : null }
           <Button title="Continue"

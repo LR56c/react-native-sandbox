@@ -1,6 +1,10 @@
 import { Tabs }          from "expo-router"
 import { HugeiconsIcon } from "@hugeicons/react-native"
-import { Home03Icon, SpoonAndForkIcon }    from "@hugeicons/core-free-icons"
+import {
+  AnalyticsUpIcon,
+  Home03Icon,
+  SpoonAndForkIcon, UserSquareIcon
+} from "@hugeicons/core-free-icons"
 
 export default function Layout() {
   return (
@@ -29,8 +33,28 @@ export default function Layout() {
                          strokeWidth={1.5}
                        />
       } }/>
-      <Tabs.Screen name="Profile"/>
-      <Tabs.Screen name="Progress"/>
+      <Tabs.Screen name="Profile"
+                   options={ {
+                     tabBarIcon: ( { color, size } ) =>
+                       <HugeiconsIcon
+                         icon={UserSquareIcon}
+                         size={ size }
+                         color={color}
+                         strokeWidth={1.5}
+                       />
+                   } }
+      />
+      <Tabs.Screen name="Progress"
+                   options={ {
+                     tabBarIcon: ( { color, size } ) =>
+                       <HugeiconsIcon
+                         icon={AnalyticsUpIcon}
+                         size={ size }
+                         color={color}
+                         strokeWidth={1.5}
+                       />
+                   } }
+      />
     </Tabs>
   )
 }

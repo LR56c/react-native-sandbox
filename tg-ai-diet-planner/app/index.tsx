@@ -19,8 +19,8 @@ export default function Index() {
       const user = await convex.query( api.users.GetUser,
         { email: userInfo.email } )
       setUser( {
-        name : user.name,
-        email: user.email
+        id: user._id,
+        ...user
       } )
       router.replace( "/(tabs)/Home" )
     } )

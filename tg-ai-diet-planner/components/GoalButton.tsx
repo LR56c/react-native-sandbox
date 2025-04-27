@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from "react-native"
 import { ComponentPropsWithoutRef } from "react"
+import { cn } from "@/shared/cn"
 
 interface GoalButtonProps extends ComponentPropsWithoutRef<typeof Pressable>{
   onPress?: () => void
@@ -16,12 +17,11 @@ export default function GoalButton( {
   ...props
 }: GoalButtonProps )
 {
-  console.log("GoalButton rerender")
   return (
     <Pressable
       {...props}
       onPress={ onPress }
-      className="border border-gray-500 rounded-xl p-4 flex flex-row items-center gap-4">
+      className={cn('border border-gray-500 rounded-xl p-4 flex flex-row items-center gap-4', props.className)}>
       { icon }
       <View>
         <Text className="text-lg font-bold">{ title }</Text>
