@@ -18,7 +18,7 @@ export default function RecipeIntro( { recipeDetail }: RecipeIntroProps ) {
       <Image resizeMode="cover" className="w-full h-40 rounded-xl mb-4"
              source={ { uri: recipeDetail.imageUrl } }/>
       <View className="flex flex-row items-center justify-between">
-        <Text className="text-lg font-bold">{ recipeDetail.recipeName }</Text>
+        <Text className="text-2xl font-bold">{ recipeDetail.recipeName }</Text>
         <HugeiconsIcon size={ 32 } color="#862afe" icon={ PlusSignSquareIcon }/>
       </View>
       <Text

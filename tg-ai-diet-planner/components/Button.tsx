@@ -19,9 +19,10 @@ export default function Button( {
 {
   return (
     <Pressable onPress={ onPress } className={ cn(
-      "bg-primary flex flex-row items-center justify-center gap-4 w-full p-5 rounded-2xl",
-      props.className ) }
-    disabled={loading}>
+      "bg-primary flex flex-row items-center justify-center gap-4 w-full p-5 rounded-2xl" ) }
+    disabled={loading}
+      { ...props }
+    >
       { loading ? <ActivityIndicator color="#ffffff"/> : <>
         { icon }
         <Text className="text-lg text-white">{ title }</Text>
