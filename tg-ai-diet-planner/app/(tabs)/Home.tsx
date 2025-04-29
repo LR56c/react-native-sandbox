@@ -41,8 +41,6 @@ export default function Home() {
           <TodayProgress/>
           <GenerateRecipeCard/>
           <TodayMealPlan/>
-          <Button loading={ false } onPress={ () => router.push(
-            "/recipe-detail/jd72nayb3axynrnkawr0jn1nyn7et7n4" ) } title="test"/>
         </View>
       )}
     />
