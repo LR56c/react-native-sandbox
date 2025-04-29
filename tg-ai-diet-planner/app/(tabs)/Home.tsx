@@ -1,4 +1,4 @@
-import { View }           from "react-native"
+import { FlatList, View } from "react-native"
 import { useUserStore }   from "@/store/useUser"
 import { useEffect }      from "react"
 import { useRouter }      from "expo-router"
@@ -17,7 +17,6 @@ export default function Home() {
   const checkUser = async () => {
     // const renew = await convex.query( api.users.GetUser,
     //   { email: user?.email } )
-
     if ( !user?.weight ) {
       router.replace( "/preference" )
     }
@@ -33,12 +32,19 @@ export default function Home() {
   }, [user] )
 
   return (
-    <View className="flex gap-4 p-4">
-      <HomeHeader/>
-      <TodayProgress/>
-      <GenerateRecipeCard/>
-      <TodayMealPlan/>
-      <Button loading={ false } onPress={ () => router.push( "/recipe-detail/jd72nayb3axynrnkawr0jn1nyn7et7n4") } title="test"/>
-    </View>
+    <FlatList
+      data={ [] }
+      renderItem={ () => null }
+      ListHeaderComponent={(
+        <View className="flex gap-4 p-4">
+          <HomeHeader/>
+          <TodayProgress/>
+          <GenerateRecipeCard/>
+          <TodayMealPlan/>
+          <Button loading={ false } onPress={ () => router.push(
+            "/recipe-detail/jd72nayb3axynrnkawr0jn1nyn7et7n4" ) } title="test"/>
+        </View>
+      )}
+    />
   )
 }

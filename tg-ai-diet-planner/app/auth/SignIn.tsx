@@ -25,7 +25,6 @@ export default function SignIn() {
   const convex  = useConvex()
 
   const onSubmit = async ( data ) => {
-    console.log( "onSubmit", data )
     signInWithEmailAndPassword( auth, data.email, data.password ).then(
       async ( userCredential ) => {
         const user = await convex.query( api.users.GetUser,

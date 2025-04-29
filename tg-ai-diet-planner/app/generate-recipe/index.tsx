@@ -34,7 +34,6 @@ export default function index() {
       const jsonContent = JSON.parse(
         aiResult.choices[0].message.content?.replace( "```json", "" )
                            .replace( "```", "" ) ) ?? []
-      console.log( "jsonContent", jsonContent )
       setRecipes( jsonContent )
     }
     catch ( e ) {

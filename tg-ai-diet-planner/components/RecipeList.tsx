@@ -38,10 +38,7 @@ export default function RecipeList( { recipes }: RecipeListProps ) {
         imageUrl  : imageResult.data.image,
         recipeName: recipe.recipeName
       } )
-      router.push({
-        pathname: "/(tabs)/RecipeDetail",
-         recipeId: saveRecipeResult
-      })
+      router.push(`/recipe-detail/${saveRecipeResult}`)
     }
     catch ( e ) {
       console.log( "error recipe select", e )

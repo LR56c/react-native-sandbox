@@ -28,14 +28,12 @@ export default function SignUp() {
   const createNewUser = useMutation( api.users.CreateNewUser )
   const setUser = useUserStore((state) => state.setUser);
   const onSubmit      = async ( data ) => {
-    console.log( "onSubmit", data )
     const r      = await createUserWithEmailAndPassword( auth, data.email,
       data.password )
     const result = await createNewUser( {
       email: data.email,
       name : data.name
     } )
-    console.log( "result", result )
     setUser({
       name: data.name,
       email: data.email,

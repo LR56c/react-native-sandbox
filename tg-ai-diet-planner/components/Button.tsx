@@ -13,7 +13,7 @@ export default function Button( {
   title,
   onPress,
   icon,
-  loading,
+  loading = false,
   ...props
 }: ButtonProps )
 {

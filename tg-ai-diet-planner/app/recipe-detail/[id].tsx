@@ -6,18 +6,21 @@ import { api }                            from "@/convex/_generated/api"
 import RecipeIngredients                  from "@/components/RecipeIngredients"
 import RecipeSteps                        from "@/components/RecipeSteps"
 import Button                             from "@/components/Button"
+import ActionSheet                        from "react-native-actions-sheet"
+import { useRef }                         from "react"
+import AddToMealActionSheet
+                                          from "@/components/AddToMealActionSheet"
 
 export default function detail() {
 
-  // const actionSheetRef     = useRef()
+  const actionSheetRef     = useRef()
   const { id }             = useLocalSearchParams()
   const recipeDetailResult = useQuery( api.recipes.GetRecipe, {
     id: id
   } )
 
   const onPress = () => {
-    console.log( "onPress" )
-    // actionSheetRef.current?.show()
+    actionSheetRef.current?.show()
   }
 
   return (
@@ -40,9 +43,18 @@ export default function detail() {
                 }
       />
       <View className="absolute w-full bottom-0 z-50 p-4">
-        <Button onPress={ () => onPress } loading={ false }
+        <Button onPress={ () => onPress() } loading={ false }
                 title="Add To Meal Plan"/>
       </View>
+      {recipeDetailResult ?
+        <ActionSheet ref={ actionSheetRef }>
+          <AddToMealActionSheet recipeDetail={recipeDetailResult}
+                                hideActionSheet={()=>
+                                  actionSheetRef.current?.hide()
+          }
+          />
+        </ActionSheet> : null
+      }
     </View>
   )
 }
