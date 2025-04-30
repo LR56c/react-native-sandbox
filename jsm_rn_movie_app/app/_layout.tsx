@@ -5,13 +5,13 @@ export default function RootLayout() {
   return (
     <>
       <StatusBar style="light"/>
-      <Stack>
-        <Stack.Screen name="(tabs)"
-                      options={ { headerShown: false } }
-        />
-        <Stack.Screen name="movies/[id]"
-                      options={ { headerShown: false } }
-        />
+      <Stack
+        screenOptions={{
+          headerShown: false
+        }}
+      >
+        <Stack.Screen name="(tabs)"/>
+        <Stack.Screen name="movies/[id]"/>
       </Stack>
     </>
   )
