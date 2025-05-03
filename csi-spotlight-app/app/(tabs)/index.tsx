@@ -1,20 +1,39 @@
-import { FlatList, Pressable, ScrollView, Text, View } from "react-native"
-import { useAuth }                                     from "@clerk/clerk-expo"
-import { styles }                          from "@/styles/feed.styles"
-import { Ionicons }                        from "@expo/vector-icons"
-import { COLORS }                          from "@/constants/theme"
-import { useQuery }                        from "convex/react"
-import { api }                             from "@/convex/_generated/api"
-import Loader                              from "@/components/Loader"
-import Post                                from "@/components/Post"
-import { STORIES }                         from "@/constants/mock_data"
-import Story                               from "@/components/Story"
+import { FlatList, Pressable, RefreshControl, Text, View } from "react-native"
+import {
+  useAuth
+}                                                          from "@clerk/clerk-expo"
+import {
+  styles
+}                                                          from "@/styles/feed.styles"
+import {
+  Ionicons
+}                                                          from "@expo/vector-icons"
+import {
+  COLORS
+}                                                          from "@/constants/theme"
+import { useQuery }                                        from "convex/react"
+import {
+  api
+}                                                          from "@/convex/_generated/api"
+import Loader
+                                                           from "@/components/Loader"
+import Post
+                                                           from "@/components/Post"
 import StoriesSection
-                                                       from "@/components/StoriesSection"
+                                                           from "@/components/StoriesSection"
+import { useState }                                        from "react"
 
 export default function Index() {
-  const { signOut } = useAuth()
-  const posts       = useQuery( api.posts.getFeedPosts )
+  const { signOut }                 = useAuth()
+  const [refreshing, setRefreshing] = useState( false )
+  const posts                       = useQuery( api.posts.getFeedPosts )
+
+  const onRefreshing = async () => {
+    setRefreshing( true )
+    setTimeout( () => {
+      setRefreshing( false )
+    }, 2000)
+  }
 
   if ( !posts ) {
     return (
@@ -41,6 +60,13 @@ export default function Index() {
                 keyExtractor={ ( item ) => item._id }
                 showsVerticalScrollIndicator={ false }
                 contentContainerStyle={ { paddingBottom: 60 } }
+                refreshControl={
+                  <RefreshControl
+                    refreshing={ refreshing }
+                    onRefresh={ onRefreshing }
+                    tintColor={ COLORS.primary }
+                  />
+                }
                 ListHeaderComponent={ <StoriesSection/> }
       />
     </View>

@@ -20,8 +20,8 @@ import Comment                   from "@/components/Comment"
 interface CommentsModalProps {
   postId: string
   visible: boolean
-  onClose: () => void
-  onCommentAdded: ( comment: string ) => void
+  onClose ?: () => void
+  onCommentAdded ?: ( comment: string ) => void
 }
 
 export default function CommentsModal( {
@@ -41,7 +41,7 @@ export default function CommentsModal( {
     try {
       const comment = await addComment( { postId, content: newComment } )
       setNewComment( "" )
-      onCommentAdded( comment )
+      onCommentAdded?.( comment)
     }
     catch ( e ) {
       console.log( "Error adding comment", e )

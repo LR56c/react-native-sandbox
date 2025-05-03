@@ -36,7 +36,7 @@ export default function NotificationItem( { notification }: NotificationItemProp
           </Pressable>
         </Link>
         <View style={ styles.notificationInfo }>
-          <Link href={ "/notifications" } asChild>
+          <Link href={ `/user/${notification.sender._id}` } asChild>
             <Pressable>
               <Text
                 style={ styles.username }>{ notification.sender.username }</Text>
