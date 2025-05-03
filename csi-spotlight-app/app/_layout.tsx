@@ -7,9 +7,10 @@ import { ConvexProviderWithClerk }        from "convex/react-clerk"
 import { ConvexReactClient }              from "convex/react"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { SplashScreen }                   from "expo-router"
-import { useFonts }                       from "expo-font"
-import { useCallback }                    from "react"
-
+import { useFonts }               from "expo-font"
+import { useCallback, useEffect } from "react"
+import * as NavigationBar         from 'expo-navigation-bar'
+import { Platform }                       from "react-native"
 const convex = new ConvexReactClient( process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false
 } )
@@ -20,6 +21,14 @@ export default function RootLayout() {
     "JetBrainsMono-Medium": require(
       "./../assets/fonts/JetBrainsMono-Medium.ttf" )
   } )
+
+  useEffect( () => {
+    if(Platform.OS === 'android'){
+      NavigationBar.setBackgroundColorAsync( "black" )
+      NavigationBar.setButtonStyleAsync( "light" )
+    }
+  }, [] )
+
   const onLayoutRootView = useCallback( async () => {
     if ( !fontsLoaded ) {
       await SplashScreen.hideAsync()
